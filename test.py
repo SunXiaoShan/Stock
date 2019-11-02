@@ -54,6 +54,13 @@
 
 # exit()
 
+from StockFunction import getStockIdList
+from StockFunction import storeStockIdListToCsvFile
+
+stockList = getStockIdList()
+storeStockIdListToCsvFile(stockList, './stock_list.csv')
+
+exit()
 
 from twstock import Stock
 
