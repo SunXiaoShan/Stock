@@ -54,11 +54,18 @@
 
 # exit()
 
-from StockFunction import getStockIdList
-from StockFunction import storeStockIdListToCsvFile
+# import pandas as pd
+# data = pd.read_csv("./stock_list.csv")
+# stockNumberList =  data['id']
+# print(stockNumberList[3])
 
-stockList = getStockIdList()
-storeStockIdListToCsvFile(stockList, './stock_list.csv')
+# exit()
+
+from StockFunction import getStockList
+
+
+stockList = getStockList()
+
 
 exit()
 

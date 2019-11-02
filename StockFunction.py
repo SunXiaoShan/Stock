@@ -1,12 +1,22 @@
 import requests
 import pandas as pd
 
+from pathlib import Path
+
+def getStockList():
+    if isStockCsvFileExist():
+        return loadStockCsvFile()
+
+    stockListData = requestStockIdList()
+    storeStockIdListToCsvFile(stockListData)
+    return stockListData
+
 def getStockNumListUrl():
     # strMode=2 就是上市，而 strMode=4 就是上櫃
     return 'http://isin.twse.com.tw/isin/C_public.jsp?strMode=2'
 
-def getStockIdList():
-    res = requests.get(getStockNumListUrl())
+def requestStockIdList(url=getStockNumListUrl()):
+    res = requests.get(url)
     # get the first table
     df = pd.read_html(res.text)[0]
 
@@ -28,9 +38,28 @@ def getStockIdList():
         stockIdList.append(stock[0])
         stockNameList.append(stock[1])
 
+        if '9958' == stock[0]:
+            break
+
     data = { 'id' : stockIdList, 'name' : stockNameList }
     return data
 
-def storeStockIdListToCsvFile(stockIdDataList, path):
+def getStockListCsvFilePath():
+    return './stock_list.csv'
+
+def storeStockIdListToCsvFile(stockIdDataList, path=getStockListCsvFilePath()):
     df = pd.DataFrame(stockIdDataList)
     df.to_csv(path, encoding='utf-8')
+
+def isStockCsvFileExist(path=getStockListCsvFilePath()):
+    my_file = Path(path)
+    return my_file.is_file()
+
+def loadStockCsvFile(path=getStockListCsvFilePath()):
+    df = pd.read_csv(path)
+    data = { 'id' : df['id'].values, 'name' : df['name'].values }
+    return data
+
+
+
+
