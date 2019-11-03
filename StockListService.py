@@ -88,8 +88,6 @@ def getStockUrlList(stockIdList=getStockList()['id'], maxCount=getStockMaxCount(
 
     return stockInfoUrlList
 
-
-
 # MARK: -
 
 

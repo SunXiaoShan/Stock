@@ -62,12 +62,23 @@
 
 # exit()
 
-from StockFunction import getStockList
-stockIdList = getStockList()['id']
+# from StockFunction import getStockList
+# stockIdList = getStockList()['id']
 
-from StockFunction import getStockUrlList
-urlList = getStockUrlList()
-print(urlList[0])
+# from StockFunction import getStockUrlList
+# urlList = getStockUrlList()
+# print(urlList[0])
+
+# exit()
+
+url='http://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_1101.tw'
+
+import requests
+res = requests.get(url)
+stockJson = res.json()
+
+print(stockJson['msgArray'][0]['nf'])
+
 
 exit()
 
