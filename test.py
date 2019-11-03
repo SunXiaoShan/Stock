@@ -54,22 +54,29 @@
 
 # exit()
 
-# import pandas as pd
-# data = pd.read_csv("./stock_list.csv")
-# stockNumberList =  data['id']
-# print(stockNumberList[3])
-
-# exit()
-
 from StockFunction import getStockList
-
-
-stockList = getStockList()
-
+import pandas as pd
+data = getStockList()
+stockNumberList =  data['id']
+print(type(stockNumberList[3]))
 
 exit()
 
+from StockFunction import getStockList
+stockIdList = getStockList()['id']
+
 from twstock import Stock
+import time
+
+for stockId in stockIdList:
+    # stock = Stock(str(stockId))
+    # ma_p = stock.moving_average(stock.price, 5)
+    # print("stock: " + str(stockId) + ' price:' + str(ma_p[-1]))
+    time.sleep(10)
+    print("stockId" + str(stockId) )
+
+exit()
+
 
 stock = Stock('2330')                             # 擷取台積電股價
 ma_p = stock.moving_average(stock.price, 5)       # 計算五日均價

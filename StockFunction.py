@@ -57,7 +57,8 @@ def isStockCsvFileExist(path=getStockListCsvFilePath()):
 
 def loadStockCsvFile(path=getStockListCsvFilePath()):
     df = pd.read_csv(path)
-    data = { 'id' : df['id'].values, 'name' : df['name'].values }
+    strIdList = list(map(str, df['id'].values))
+    data = { 'id' : strIdList, 'name' : df['name'].values }
     return data
 
 
