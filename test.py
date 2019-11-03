@@ -54,26 +54,45 @@
 
 # exit()
 
-from StockFunction import getStockList
-import pandas as pd
-data = getStockList()
-stockNumberList =  data['id']
-print(type(stockNumberList[3]))
+# from StockFunction import getStockList
+# import pandas as pd
+# data = getStockList()
+# stockNumberList =  data['id']
+# print(type(stockNumberList[3]))
 
-exit()
+# exit()
 
 from StockFunction import getStockList
 stockIdList = getStockList()['id']
 
+from StockFunction import getStockUrlList
+urlList = getStockUrlList()
+print(urlList[0])
+
+exit()
+
 from twstock import Stock
 import time
 
+stockInfoUrlList = []
+count = 150
+index = 0
+basicUrl = 'http://mis.twse.com.tw/stock/api/getStockInfo.jsp' + '?ex_ch='
 for stockId in stockIdList:
-    # stock = Stock(str(stockId))
-    # ma_p = stock.moving_average(stock.price, 5)
-    # print("stock: " + str(stockId) + ' price:' + str(ma_p[-1]))
-    time.sleep(10)
-    print("stockId" + str(stockId) )
+    urlArrayIndex = int(index / count)
+    if (index % count) == 0:
+        firstData = 'tse_' + str(stockId) + '.tw'
+        stockInfoUrlList.append(basicUrl + firstData)
+    else:
+        url = stockInfoUrlList[urlArrayIndex]
+        url = url + '|' + 'tse_' + str(stockId) + '.tw'
+        stockInfoUrlList[urlArrayIndex] = url
+    
+    index += 1
+
+for stockId in stockInfoUrlList:
+    print(stockId)
+    
 
 exit()
 

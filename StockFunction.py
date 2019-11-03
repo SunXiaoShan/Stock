@@ -3,6 +3,8 @@ import pandas as pd
 
 from pathlib import Path
 
+# MARK: - public get stock data list
+
 def getStockList():
     if isStockCsvFileExist():
         return loadStockCsvFile()
@@ -10,6 +12,8 @@ def getStockList():
     stockListData = requestStockIdList()
     storeStockIdListToCsvFile(stockListData)
     return stockListData
+
+# MARK: -
 
 def getStockNumListUrl():
     # strMode=2 就是上市，而 strMode=4 就是上櫃
@@ -61,6 +65,32 @@ def loadStockCsvFile(path=getStockListCsvFilePath()):
     data = { 'id' : strIdList, 'name' : df['name'].values }
     return data
 
+# MARK: -
+
+def getStockMaxCount():
+    return 150
+
+def getStockUrlList(stockIdList=getStockList()['id'], maxCount=getStockMaxCount()):
+    stockInfoUrlList = []
+    index = 0
+    basicUrl = 'http://mis.twse.com.tw/stock/api/getStockInfo.jsp' + '?ex_ch='
+    for stockId in stockIdList:
+        urlArrayIndex = int(index / maxCount)
+        if (index % maxCount) == 0:
+            firstData = 'tse_' + str(stockId) + '.tw'
+            stockInfoUrlList.append(basicUrl + firstData)
+        else:
+            url = stockInfoUrlList[urlArrayIndex]
+            url = url + '|' + 'tse_' + str(stockId) + '.tw'
+            stockInfoUrlList[urlArrayIndex] = url
+    
+        index += 1
+
+    return stockInfoUrlList
+
+
+
+# MARK: -
 
 
 
