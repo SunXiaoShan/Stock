@@ -1,5 +1,27 @@
 import requests
 
+# {
+#   "msgArray": [
+#     {
+#       # stock data
+#     }
+#   ],
+#   "userDelay": 5000,
+#   "rtmessage": "OK",
+#   "referer": "",
+#   "queryTime": {
+#     "sysTime": "22:25:25",
+#     "sessionLatestTime": -1,
+#     "sysDate": "20191103",
+#     "sessionFromTime": -1,
+#     "stockInfoItem": 826,
+#     "showChart": false,
+#     "sessionStr": "UserSession",
+#     "stockInfo": 106753
+#   },
+#   "rtcode": "0000"
+# }
+
 def requestStockInfoData(url):
     res = requests.get(url)
     stockJson = res.json()
