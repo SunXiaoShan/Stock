@@ -71,6 +71,24 @@
 
 # exit()
 
+#TODO: 
+https://www.twse.com.tw/exchangeReport/MI_INDEX?date=20191101&response=json&type=ALL
+exit()
+
+import yfinance as yf
+import datetime
+import pandas_datareader.data as web
+
+yf.pdr_override()
+
+start = datetime.datetime.now() - datetime.timedelta(days=1)
+end = datetime.date.today()
+
+dd = web.get_data_yahoo(['3008.TW', '1101.TW', '2330.TW'],start, end)
+print(dd.tail(1))
+
+exit()
+
 import datetime
 from pandas_datareader import data
 import pandas as pd
