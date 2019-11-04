@@ -71,6 +71,23 @@
 
 # exit()
 
+import datetime
+from pandas_datareader import data
+import pandas as pd
+
+sid = '0050'
+
+start = datetime.datetime.now() - datetime.timedelta(days=180)
+end = datetime.date.today()
+pd.core.common.is_list_like = pd.api.types.is_list_like
+stock_dr = data.get_data_yahoo(sid+'.TW', start, end)
+stock_dr.tail(10)
+print(stock_dr)
+
+
+
+exit()
+
 url='http://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_1101.tw'
 
 import requests
