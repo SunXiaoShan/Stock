@@ -40,12 +40,19 @@ def isCsvFileExist(path):
     my_file = Path(path)
     return my_file.is_file()
 
-def addNewStockData(timeDate, stockId, price, value):
+def addNewStockData(timeDate, stockId, price, value, highPrice=-1, lowPrice=-1, numberOfTransactions=-1):
     stockCsvFilePath = getStockFilePath(stockId)
 
     if isStockCsvFileExist(stockId) == False:
         # Create a new csv file
-        stockData = {'date' : timeDate, 'price': [price], 'value' : [value] }
+        stockData = {
+            'date' : timeDate, 
+            'price': [price], 
+            'value' : [value],
+            'numberOfTransactions' : [numberOfTransactions],
+            'highPrice' : [highPrice],
+            'lowPrice' : [lowPrice]
+            }
         df = pd.DataFrame(stockData)
         df.to_csv(stockCsvFilePath , encoding='utf-8')
         return
@@ -60,7 +67,14 @@ def addNewStockData(timeDate, stockId, price, value):
         return
 
     # insert to the top row
-    top_row = pd.DataFrame({'date':[timeDate],'price':[price],'value':[value]})
+    top_row = pd.DataFrame({
+        'date':[timeDate],
+        'price':[price],
+        'value':[value],
+        'numberOfTransactions' : [numberOfTransactions],
+        'highPrice' : [highPrice],
+        'lowPrice' : [lowPrice]
+        })
     df = pd.concat([top_row, df], sort=True).reset_index(drop=True)
     df = df.drop(columns='Unnamed: 0')
 
