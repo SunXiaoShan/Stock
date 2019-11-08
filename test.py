@@ -54,25 +54,70 @@
 
 # exit()
 
-# from StockFunction import getStockList
+# litttt = ['None'] * 1000
+# print(len(litttt))
+
+# exit()
+
+
+# import math
+# rate = 1 + 0.03
+# year = 30
+# valuePerMonth = 3000
+# valuePerYear = valuePerMonth * 12
+# total = 0
+# for i in range(year, 1, -1):
+#     value = valuePerYear * math.pow( rate, i )
+#     total += value
+
+# print(total)
+
+# exit()
+
+# from PowerStockApiService import addNewStockData
+# from PowerStockApiService import getReversedDateTimeList
+# dateList = getReversedDateTimeList()
+
+# for time in dateList:
+#     addNewStockData(time, 2201, 11, 22)
+# exit()
+
 # import pandas as pd
-# data = getStockList()
-# stockNumberList =  data['id']
-# print(type(stockNumberList[3]))
+# import datetime
+# import numpy
+
+
+# df = pd.read_csv('./tw_1101.csv')
+# top_row = pd.DataFrame({'date':[111],'price':[2],'value':[2]})
+# df = pd.concat([top_row, df]).reset_index(drop=True)
+# df = df.drop(columns='Unnamed: 0')
+# df = df.drop(df.index[len(df)-1])
+# # print(df)
+# df.to_csv('./tw_1101.csv' , encoding='utf-8')
+# exit()
+
+
+
+# mylist = ["a", "b", "a", "c", "c", 1, 1, 2, 3, 4, 4]
+# mylist = list(dict.fromkeys(mylist))
+# print(mylist)
 
 # exit()
 
-# from StockFunction import getStockList
-# stockIdList = getStockList()['id']
 
-# from StockFunction import getStockUrlList
-# urlList = getStockUrlList()
-# print(urlList[0])
+import requests
 
-# exit()
+url = 'https://www.twse.com.tw/exchangeReport/MI_INDEX'
+url += '?'
+url += 'date=20191103'
+url += '&response=json'
+url += 'type=ALL'
 
-#TODO: 
-https://www.twse.com.tw/exchangeReport/MI_INDEX?date=20191101&response=json&type=ALL
+# {'stat': '很抱歉，沒有符合條件的資料!'}
+res = requests.get(url)
+stockJson = res.json()
+print(stockJson)
+
 exit()
 
 import yfinance as yf
