@@ -9,6 +9,9 @@ import pandas as pd
 def getMaxDateCount():
     return 100
 
+def getMaxBackupDateCount():
+    return 365
+
 # current to past
 def getDateTimeList(timedelta=getMaxDateCount()):
     dateList = []
@@ -62,7 +65,7 @@ def addNewStockData(timeDate, stockId, price, value):
     df = df.drop(columns='Unnamed: 0')
 
     # Remove the last data when count is bigger than max
-    if len(df) > getMaxDateCount():
+    if len(df) > getMaxBackupDateCount():
         df = df.drop(df.index[len(df)-1])
 
     # Store the csv file
