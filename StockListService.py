@@ -5,6 +5,7 @@ from pathlib import Path
 
 # MARK: - public get stock data list
 
+# string type
 def getStockList():
     if isStockCsvFileExist():
         return loadStockCsvFile()
@@ -12,6 +13,27 @@ def getStockList():
     stockListData = requestStockIdList()
     storeStockIdListToCsvFile(stockListData)
     return stockListData
+
+# MARK: - TODO
+
+def getWhiteStockList():
+    stockIdList = [
+    ]
+    stockNameList = [
+    ] 
+
+    data = { 'id' : stockIdList, 'name' : stockNameList }
+    return
+
+def getBlackStockIdList():
+    stockIdList = [
+    ]
+    return stockIdList
+
+def getHighLightStockIdList():
+    stockIdList = [
+    ]
+    return stockIdList
 
 # MARK: -
 
