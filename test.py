@@ -105,18 +105,93 @@
 # exit()
 
 
+# import os
+# path = './StockData'
+# if os.path.isdir(path):
+#     print("hello")
+# else:
+#     print("world")
+#     os.mkdir(path)
+
+
+# exit()
+
+from PowerStockApiService import requestAllStockDatasWithTimeList
+
+requestAllStockDatasWithTimeList()
+
+exit()
+
+
+import pandas as pd
+from PowerStockApiService import getStockFilePath
+
+import numpy
+
+stockCsvFilePath = getStockFilePath(1101)
+print(stockCsvFilePath)
+
+# check file
+df = pd.read_csv(stockCsvFilePath)
+
+topDate = numpy.int64(df['date'].values[0])
+print(topDate)
+timeDate = numpy.int64(timeDate)
+
+
+exit()
+
+from PowerStockApiService import getReversedDateTimeList
+dateList = getReversedDateTimeList()
+
+from StockListService import getStockList
+
+whiteStockList = getStockList()
+whiteStockIdList = whiteStockList['id']
+whiteStockIdSet = set(whiteStockIdList)
+
+
+import json
 import requests
+from PowerStockApiService import addNewStockData
 
 url = 'https://www.twse.com.tw/exchangeReport/MI_INDEX'
 url += '?'
-url += 'date=20191103'
+url += 'date=20191109'
 url += '&response=json'
-url += 'type=ALL'
+url += '&type=ALL'
 
 # {'stat': '很抱歉，沒有符合條件的資料!'}
 res = requests.get(url)
-stockJson = res.json()
-print(stockJson)
+json_data = json.loads(res.text)
+print(json_data)
+
+if json_data['stat'] == '很抱歉，沒有符合條件的資料!':
+    print("hello")
+else:
+    print("world")
+
+stockDataList = json_data['data9']
+
+
+
+exit()
+
+index = 0
+for stockData in stockDataList:
+
+    stockId = stockData[0]
+    stockValue = stockData[2]
+    stockPrice = stockData[4]
+
+    isVailedStockData = str(stockId) in whiteStockIdSet
+    if isVailedStockData == False:
+        continue
+
+    addNewStockData( 20191108, stockId, stockPrice, stockValue)
+
+
+
 
 exit()
 

@@ -23,7 +23,7 @@ def getWhiteStockList():
     ] 
 
     data = { 'id' : stockIdList, 'name' : stockNameList }
-    return
+    return data
 
 def getBlackStockIdList():
     stockIdList = [
