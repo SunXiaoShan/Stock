@@ -116,6 +116,16 @@
 
 # exit()
 
+# import enum
+
+# class StockInfo:
+#     AA = 21
+
+
+# print(str(StockInfo.AA))
+
+# exit()
+
 from PowerStockApiService import requestAllStockDatasWithTimeList
 
 requestAllStockDatasWithTimeList()

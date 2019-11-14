@@ -15,6 +15,37 @@ import requests
 
 import time
 
+import enum
+
+# MARK: -
+
+class StockApiKey:
+    StockId = 0
+    StockName = 1
+    StockValue = 2
+    NumberOfTransactions = 3
+    DealPrice = 4
+    StockStartPrice = 5
+    StockHigh = 6
+    StockLow = 7
+    StockLastPrice = 8
+    StockSpread = 10
+    StockEPS = 15
+
+class StockDataKey:
+    TimeDate = "日期"
+    StockId = "證券代號"
+    StockName = "證券名稱"
+    StockValue = "成交股數"
+    NumberOfTransactions = "成交筆數"
+    DealPrice = "成交金額"
+    StockStartPrice = "開盤價"
+    StockHigh = "最高價"
+    StockLow = "最低價"
+    StockLastPrice = "收盤價"
+    StockSpread = "漲跌價差"
+    StockEPS = "本益比"
+
 # MARK: -
 
 def getMaxDateCount():
@@ -73,22 +104,39 @@ def createStockFolder():
 
 # MARK: -
 
-def addNewStockData(timeDate, stockId, price, value, highPrice=-1, lowPrice=-1, numberOfTransactions=-1):
-    
+def addNewStockData(timeDate, 
+                    stockId, 
+                    stockName,
+                    stockValue,
+                    numberOfTransactions,
+                    dealPrice,
+                    startPrice, 
+                    stockHigh,
+                    stockLow,
+                    stockLastPrice,
+                    stockSpread,
+                    stockEps):
+
     if isStockFolderExist() == False:
         createStockFolder()
-    
+
     stockCsvFilePath = getStockFilePath(stockId)
 
     if isStockCsvFileExist(stockId) == False:
         # Create a new csv file
         stockData = {
-            'date' : timeDate, 
-            'price': [price], 
-            'value' : [value],
-            'numberOfTransactions' : [numberOfTransactions],
-            'highPrice' : [highPrice],
-            'lowPrice' : [lowPrice]
+            StockDataKey.TimeDate : [timeDate],
+            StockDataKey.StockId : [stockId],
+            StockDataKey.StockName : [stockName],
+            StockDataKey.StockValue : [stockValue],
+            StockDataKey.NumberOfTransactions : [numberOfTransactions],
+            StockDataKey.DealPrice : [dealPrice],
+            StockDataKey.StockStartPrice : [startPrice],
+            StockDataKey.StockHigh : [stockHigh],
+            StockDataKey.StockLow : [stockLow],
+            StockDataKey.StockLastPrice : [stockLastPrice],
+            StockDataKey.StockSpread : [stockSpread],
+            StockDataKey.StockEPS : [stockEps]
             }
         df = pd.DataFrame(stockData)
         df.to_csv(stockCsvFilePath , encoding='utf-8')
@@ -105,13 +153,19 @@ def addNewStockData(timeDate, stockId, price, value, highPrice=-1, lowPrice=-1, 
 
     # insert to the top row
     top_row = pd.DataFrame({
-        'date':[timeDate],
-        'price':[price],
-        'value':[value],
-        'numberOfTransactions' : [numberOfTransactions],
-        'highPrice' : [highPrice],
-        'lowPrice' : [lowPrice]
-        })
+            StockDataKey.TimeDate : [timeDate],
+            StockDataKey.StockId : [stockId],
+            StockDataKey.StockName : [stockName],
+            StockDataKey.StockValue : [stockValue],
+            StockDataKey.NumberOfTransactions : [numberOfTransactions],
+            StockDataKey.DealPrice : [dealPrice],
+            StockDataKey.StockStartPrice : [startPrice],
+            StockDataKey.StockHigh : [stockHigh],
+            StockDataKey.StockLow : [stockLow],
+            StockDataKey.StockLastPrice : [stockLastPrice],
+            StockDataKey.StockSpread : [stockSpread],
+            StockDataKey.StockEPS : [stockEps]
+            })
     df = pd.concat([top_row, df], sort=True).reset_index(drop=True)
     df = df.drop(columns='Unnamed: 0')
 
@@ -159,13 +213,12 @@ def requestAllStockDatasWithTimeList(dateTimeList=getReversedDateTimeList(), sto
 
     print("Power - requestAllStockDatasWithTimeList end")
 
-
 def requestAllStockDatas(dateTime, stockIdSet=getStockIdSet()):
     url = 'https://www.twse.com.tw/exchangeReport/MI_INDEX'
     url += '?'
     url += 'date=' + str(dateTime)
     url += '&response=json'
-    url += '&type=ALL'
+    url += '&type=ALLBUT0999'
 
     res = requests.get(url)
     json_data = json.loads(res.text)
@@ -177,24 +230,36 @@ def requestAllStockDatas(dateTime, stockIdSet=getStockIdSet()):
     stockDataList = json_data['data9']
 
     for stockData in stockDataList:
+        stockId = stockData[StockApiKey.StockId]
+        stockName = stockData[StockApiKey.StockName]
+        stockValue = stockData[StockApiKey.StockValue]
+        numberOfTransactions = stockData[StockApiKey.NumberOfTransactions]
+        dealPrice = stockData[StockApiKey.DealPrice]
+        startPrice = stockData[StockApiKey.StockStartPrice]
+        stockHigh = stockData[StockApiKey.StockHigh]
+        stockLow = stockData[StockApiKey.StockLow]
+        stockLastPrice = stockData[StockApiKey.StockLastPrice]
+        stockSpread = stockData[StockApiKey.StockSpread]
+        stockEps = stockData[StockApiKey.StockEPS]
 
-        stockId = stockData[0]
-        stockValue = stockData[2]
-        stockPrice = stockData[8]
-        numberOfTransactions = stockData[3]
-        stockHigh = stockData[6]
-        stockLow = stockData[7]
-
-        isVailedStockData = str(stockId) in stockIdSet
-        if isVailedStockData == False:
-            continue
+        # Remove the stock filter
+        # isVailedStockData = str(stockId) in stockIdSet
+        # if isVailedStockData == False:
+        #     continue
 
         addNewStockData( 
                          str(dateTime), 
                          stockId, 
-                         stockPrice, 
-                         stockValue, 
-                         stockHigh, 
-                         stockLow, 
-                         numberOfTransactions
+                         stockName,
+                         stockValue,
+                         numberOfTransactions,
+                         dealPrice,
+                         startPrice,
+                         stockHigh,
+                         stockLow,
+                         stockLastPrice,
+                         stockSpread,
+                         stockEps
                         )
+
+
