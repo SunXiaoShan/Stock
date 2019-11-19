@@ -55,7 +55,7 @@ def getMaxBackupDateCount():
     return 365
 
 def getRequestStockDataApiSleepTime():
-    return 10
+    return 30
 
 # MARK: -
 
@@ -144,7 +144,7 @@ def addNewStockData(timeDate,
 
     # Load the csv file
     df = pd.read_csv(stockCsvFilePath)
-    topDate = df['date'].values[0]
+    topDate = df[StockDataKey.TimeDate].values[0]
     timeDate = numpy.int64(timeDate)
 
     # Detect the data is exist, isn't it?
@@ -181,7 +181,8 @@ def addNewStockData(timeDate,
 def getStockIdSet():
     whiteStockList = getStockList()
     whiteStockIdList = whiteStockList['id']
-    whiteStockIdSet = set(whiteStockIdList)
+    _list = []
+    whiteStockIdSet = set(_list)
     return whiteStockIdSet
 
 # MARK: -
@@ -200,7 +201,7 @@ def requestAllStockDatasWithTimeList(dateTimeList=getReversedDateTimeList(), sto
         
         stockCsvFilePath = getStockFilePath(1101)
         df = pd.read_csv(stockCsvFilePath)
-        topDate = numpy.int64(df['date'].values[0])
+        topDate = numpy.int64(df[StockDataKey.TimeDate].values[0])
         dataTime = numpy.int64(dataTime)
 
         if dataTime <= topDate:
