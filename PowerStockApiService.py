@@ -48,6 +48,23 @@ class StockDataKey:
 
 # MARK: -
 
+class StockMarketIndexApiKey:
+    StockMarketIndexValue = 0
+    CloseIndex = 1
+    DiffIndex = 2
+    DiffRatio = 3
+    DiffPercent = 4
+
+class StockMarketIndexKey:
+    TimeDate = "日期"
+    StockMarketIndexValue = '指數'
+    CloseIndex = '收盤指數'
+    DiffIndex = '漲跌(+/-)'
+    DiffRatio = '漲跌點數'
+    DiffPercent = '漲跌百分比(%)'
+
+# MARK: -
+
 def getMaxDateCount():
     return 100
 
@@ -89,8 +106,6 @@ def isCsvFileExist(path):
     my_file = Path(path)
     return my_file.is_file()
 
-# MARK: -
-
 def getStockDataFolderPath():
     return './StockData'
 
@@ -100,6 +115,26 @@ def isStockFolderExist():
 
 def createStockFolder():
     path = getStockDataFolderPath()
+    os.mkdir(path)
+
+# MARK: -
+
+def getStockMarketIndexFilePath(stockId):
+    return './StockMarketIndexData/' + 'tw_' + str(stockId) + '.csv'
+
+def isStockMarketIndexCsvFileExist(stockId):
+    stockFilePath = getStockMarketIndexFilePath(stockId)
+    return isCsvFileExist(stockFilePath)
+
+def getStockMarketIndexFolderPath():
+    return './StockMarketIndexData'
+
+def isStockMarketIndexFolderExist():
+    path = getStockMarketIndexFolderPath()
+    return os.path.isdir(path)
+
+def createStockMarketIndexFolder():
+    path = getStockMarketIndexFolderPath()
     os.mkdir(path)
 
 # MARK: -
@@ -263,4 +298,116 @@ def requestAllStockDatas(dateTime, stockIdSet=getStockIdSet()):
                          stockEps
                         )
 
+def requestAllStockMarketIndexWithTimeList(dateTimeList=getReversedDateTimeList()):
+    sleepTime = getRequestStockDataApiSleepTime()
 
+    print("Power market index - requestAllStockMarketIndexWithTimeList start")
+    for dataTime in dateTimeList:
+        if isStockMarketIndexCsvFileExist('發行量加權股價指數') == False:
+            requestStockMarketIndex(dataTime)
+
+            print("Power market index - %s done" % str(dataTime))
+            time.sleep(sleepTime)
+            continue
+        
+        stockCsvFilePath = getStockMarketIndexFilePath('發行量加權股價指數')
+        df = pd.read_csv(stockCsvFilePath)
+        topDate = numpy.int64(df[StockMarketIndexKey.TimeDate].values[0])
+        dataTime = numpy.int64(dataTime)
+
+        if dataTime <= topDate:
+            print("Power market index - %s pass" % str(dataTime))
+            continue
+
+        requestStockMarketIndex(dataTime)
+        print("Power market index - %s done" % str(dataTime))
+        time.sleep(sleepTime)
+
+    print("Power market index - requestAllStockMarketIndexWithTimeList end")
+
+def requestStockMarketIndex(dateTime):
+    url = 'https://www.twse.com.tw/exchangeReport/MI_INDEX'
+    url += '?'
+    url += 'date=' + str(dateTime)
+    url += '&response=json'
+    url += '&type=IND'
+
+    res = requests.get(url)
+    json_data = json.loads(res.text)
+
+    if json_data['stat'] == '很抱歉，沒有符合條件的資料!':
+        print("Power - %s 沒有符合條件的資料" % str(dateTime))
+        return
+
+    stockMarketIndexList = json_data['data1']
+
+    for stockMarketIndexData in stockMarketIndexList:
+        stockMarketIndex = stockMarketIndexData[StockMarketIndexApiKey.StockMarketIndexValue]
+        closeIndex = stockMarketIndexData[StockMarketIndexApiKey.CloseIndex]
+        diffIndex = stockMarketIndexData[StockMarketIndexApiKey.DiffIndex]
+        diffRatio = stockMarketIndexData[StockMarketIndexApiKey.DiffRatio]
+        diffPercent = stockMarketIndexData[StockMarketIndexApiKey.DiffPercent]
+
+        addNewStockMarketIndexData(
+            str(dateTime),
+            stockMarketIndex,
+            closeIndex,
+            diffIndex,
+            diffRatio,
+            diffPercent
+        )
+
+
+def addNewStockMarketIndexData(timeDate, 
+                               stockMarketIndex, 
+                               closeIndex,
+                               diffIndex,
+                               diffRatio,
+                               diffPercent):
+
+    if isStockMarketIndexFolderExist() == False:
+        createStockMarketIndexFolder()
+
+    stockCsvFilePath = getStockMarketIndexFilePath(stockMarketIndex)
+
+    if isStockMarketIndexCsvFileExist(stockMarketIndex) == False:
+        # Create a new csv file
+        stockData = {
+            StockMarketIndexKey.TimeDate : [timeDate],
+            StockMarketIndexKey.StockMarketIndexValue : [stockMarketIndex],
+            StockMarketIndexKey.CloseIndex : [closeIndex],
+            StockMarketIndexKey.DiffIndex : [diffIndex],
+            StockMarketIndexKey.DiffRatio : [diffRatio],
+            StockMarketIndexKey.DiffPercent : [diffPercent]
+            }
+        df = pd.DataFrame(stockData)
+        df.to_csv(stockCsvFilePath , encoding='utf-8')
+        return
+
+    # Load the csv file
+    df = pd.read_csv(stockCsvFilePath)
+    topDate = df[StockMarketIndexKey.TimeDate].values[0]
+    timeDate = numpy.int64(timeDate)
+
+    # Detect the data is exist, isn't it?
+    if timeDate <= topDate:
+        return
+
+    # insert to the top row
+    top_row = pd.DataFrame({
+            StockMarketIndexKey.TimeDate : [timeDate],
+            StockMarketIndexKey.StockMarketIndexValue : [stockMarketIndex],
+            StockMarketIndexKey.CloseIndex : [closeIndex],
+            StockMarketIndexKey.DiffIndex : [diffIndex],
+            StockMarketIndexKey.DiffRatio : [diffRatio],
+            StockMarketIndexKey.DiffPercent : [diffPercent]
+            })
+    df = pd.concat([top_row, df], sort=True).reset_index(drop=True)
+    df = df.drop(columns='Unnamed: 0')
+
+    # Remove the last data when count is bigger than max
+    if len(df) > getMaxBackupDateCount():
+        df = df.drop(df.index[len(df)-1])
+
+    # Store the csv file
+    df.to_csv(stockCsvFilePath , encoding='utf-8')
