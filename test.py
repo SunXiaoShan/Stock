@@ -126,9 +126,14 @@
 
 # exit()
 
-from PowerStockApiService import requestAllStockDatasWithTimeList
+from PowerStockApiService import requestAllStockMarketIndexWithTimeList
+requestAllStockMarketIndexWithTimeList()
 
+from PowerStockApiService import requestAllStockDatasWithTimeList
 requestAllStockDatasWithTimeList()
+
+from PickStockService import getVailedStockIdList
+print(getVailedStockIdList())
 
 exit()
 

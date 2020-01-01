@@ -158,9 +158,6 @@ def getVailedStockIdList():
         result.append(stockId)
     return result
 
-
-
-print(getVailedStockIdList())
     
 
 
