@@ -78,6 +78,10 @@ day20ma, day100ma, previousWeekValue, rate):
 
     print(message)
 
+    message = '```' + '\n' + message + '\n' + '```'
+    logMessageToReadmeFile(message)
+
+
 
 def isVailedStock(csvFileName):
     from PowerStockApiService import StockDataKey
@@ -158,7 +162,31 @@ def getVailedStockIdList():
         result.append(stockId)
     return result
 
-    
+def getReadmeFileName():
+    return 'README.md'
+
+def createReadmeFile():
+    f = open(getReadmeFileName(), "a")
+    f.write("# Stock\n")
+    f.close()
+
+def logMessageToReadmeFile(message):
+    f = open(getReadmeFileName(), "a")
+    f.write(message + "\n")
+    f.close()
+
+def removeReadmeFile():
+    os.remove(getReadmeFileName())
+
+# removeReadmeFile()
+# f = open("demofile2.txt", "a")
+# f.write("# Stock\n")
+# f.write("```\n")
+# f.write("```Now the file has more content!")
+
+# f.write("```\n")
+# f.close()
+
 
 
 
