@@ -126,11 +126,11 @@
 
 # exit()
 
-# from PowerStockApiService import requestAllStockMarketIndexWithTimeList
-# requestAllStockMarketIndexWithTimeList()
+from PowerStockApiService import requestAllStockMarketIndexWithTimeList
+requestAllStockMarketIndexWithTimeList()
 
-# from PowerStockApiService import requestAllStockDatasWithTimeList
-# requestAllStockDatasWithTimeList()
+from PowerStockApiService import requestAllStockDatasWithTimeList
+requestAllStockDatasWithTimeList()
 
 from PickStockService import createReadmeFile
 from PickStockService import removeReadmeFile
